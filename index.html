@@ -92,6 +92,15 @@
             transform: scale(0.92) rotate(90deg);
         }
 
+        .refresh-btn.refreshing {
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
         .main-card {
             background: rgba(255, 255, 255, 0.96);
             width: 100%;
@@ -271,6 +280,20 @@
             color: #8b8b8b;
         }
 
+        .source-text-label {
+            font-size: 11px;
+            color: #a07c2e;
+            text-align: center;
+            margin-top: 14px;
+            padding: 0;
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            font-weight: 400;
+            letter-spacing: normal;
+        }
+
         .footer {
             margin-top: 44px;
             padding-top: 24px;
@@ -339,7 +362,7 @@
 <div class="glow" style="top: -5%; left: -5%;"></div>
 <div class="glow" style="bottom: -5%; right: -5%; background: radial-gradient(circle, rgba(16,185,129,0.12) 0%, transparent 70%);"></div>
 
-<button class="refresh-btn" id="refresh-btn" title="刷新页面">
+<button class="refresh-btn" id="refresh-btn" title="同步最新配置">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
         <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
     </svg>
@@ -364,25 +387,16 @@
 
     <div class="header">
         <h1>文档连接中心</h1>
-        <p>文档网关安全连接</p>
+        <p>加载安全网关配置...</p>
     </div>
 
     <div class="alert-box">
-        <div class="alert-desc">
+        <div class="alert-desc" id="alert-message">
             目前文档更新为飞书文档，不再使用金山文档，可以直接前往飞书了，不会再卡死了
         </div>
     </div>
 
-    <div id="action-area" class="btn-group">
-        <a href="https://jcnuvckg2scm.feishu.cn/wiki/DcJqwh898iyqHBkRGNIcuam4nHg?from=from_copylink" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
-            线路一：飞书文档（官方）
-            <span class="badge badge-rec">推荐</span>
-        </a>
-        <div class="btn btn-secondary">
-            线路二：备用在线预览（停用）
-            <span class="badge badge-offline">停用</span>
-        </div>
-    </div>
+    <div id="action-area" class="btn-group"></div>
 
     <div class="footer">
         <span>NODE: GATEWAY-8492A</span>
@@ -393,58 +407,218 @@
 <div id="modal-overlay">
     <div class="modal">
         <h2 style="margin-bottom: 20px; letter-spacing: -0.02em; font-weight: 700;">配置核验</h2>
-        <div id="modal-content">
-            <div class="modal-item"><b>版本标识：</b>2026-05-28 正式版</div>
-            <div class="modal-item"><b>连接模式：</b>实时同步(云端)</div>
-            <div class="modal-item"><b>网关内核：</b>1.0.4</div>
-            <div class="modal-item"><b>文档源：</b>飞书官方</div>
-        </div>
+        <div id="modal-content"></div>
         <button class="modal-close" id="modal-close">确认并关闭</button>
     </div>
 </div>
 
 <script>
-    // 极简版本：直接硬编码，始终显示 ACTIVE 状态
+    // ============================================================
+    // DOCS.GATEWAY - 完整功能版
+    // 托管说明：将此HTML文件上传至任意静态托管服务即可
+    // 如需动态更新配置，请在同目录下放置 config.json 文件
+    // ============================================================
+    
     const CONFIG_VERSION = "1.0.4";
     
-    function updateStatusUI() {
-        const dot = document.getElementById('status-dot');
-        const text = document.getElementById('status-text');
-        if (dot && text) {
+    // 内置降级配置（当网络和缓存都不可用时使用）
+    const FALLBACK_CONFIG = {
+        line1_feishu: "https://jcnuvckg2scm.feishu.cn/wiki/DcJqwh898iyqHBkRGNIcuam4nHg?from=from_copylink",
+        version_time: "内置稳定版本 (Fallback)"
+    };
+    
+    let currentConfig = null;
+    let currentStatusType = "active"; // active, cached, js-fallback
+    
+    const getEl = (id) => document.getElementById(id);
+    
+    function updateAlertText() {
+        const alertDiv = document.querySelector('.alert-desc');
+        if (alertDiv) {
+            alertDiv.innerText = "目前文档更新为飞书文档，不再使用金山文档，可以直接前往飞书了，不会再卡死了";
+        }
+    }
+    
+    function updateStatusUI(type) {
+        const dot = getEl('status-dot');
+        const text = getEl('status-text');
+        const refreshBtn = getEl('refresh-btn');
+        if (!dot || !text || !refreshBtn) return;
+        refreshBtn.classList.remove('refreshing');
+        
+        currentStatusType = type;
+        
+        if (type === 'refreshing') {
+            text.innerText = 'SYNCING...';
+            refreshBtn.classList.add('refreshing');
+        } else if (type === 'js-fallback') {
+            dot.style.backgroundColor = '#ef4444';
+            text.innerText = 'JS FALLBACK';
+        } else if (type === 'cached') {
+            dot.style.backgroundColor = '#f59e0b';
+            text.innerText = 'CACHED';
+        } else {
             dot.style.backgroundColor = '#10b981';
             text.innerText = 'ACTIVE';
         }
     }
     
+    // 从服务器获取配置（需要同目录下有 config.json）
+    async function fetchConfig() {
+        const t = Date.now();
+        const url = `./config.json?t=${t}&v=${CONFIG_VERSION}`;
+        try {
+            const response = await fetch(url, { 
+                cache: 'no-store',
+                headers: { 'Cache-Control': 'no-cache' }
+            });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const remoteData = await response.json();
+            return {
+                line1_feishu: remoteData.line1_feishu || FALLBACK_CONFIG.line1_feishu,
+                version_time: remoteData.version_time || "云端实时配置"
+            };
+        } catch (err) {
+            throw new Error('Network fetch failed');
+        }
+    }
+    
+    function renderButtons(data, sourcePlainText = "") {
+        const area = getEl('action-area');
+        if (!area) return;
+        
+        const line1Url = data.line1_feishu || FALLBACK_CONFIG.line1_feishu;
+        
+        let sourceHtml = '';
+        if (sourcePlainText && sourcePlainText.trim() !== "") {
+            sourceHtml = `<div class="source-text-label">${sourcePlainText}</div>`;
+        }
+        
+        const buttonsHtml = `
+            <a href="${line1Url}" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+                线路一：飞书文档（官方）
+                <span class="badge badge-rec">推荐</span>
+            </a>
+            <div class="btn btn-secondary">
+                线路二：备用在线预览（停用）
+                <span class="badge badge-offline">停用</span>
+            </div>
+            ${sourceHtml}
+        `;
+        
+        area.innerHTML = buttonsHtml;
+    }
+    
+    function saveToLocalCache(data) {
+        try {
+            localStorage.setItem('gateway_config_v4', JSON.stringify({
+                data: {
+                    line1_feishu: data.line1_feishu,
+                    version_time: data.version_time
+                },
+                time: Date.now()
+            }));
+        } catch(e) {}
+    }
+    
+    async function loadApp(forceRefresh = false) {
+        updateStatusUI('refreshing');
+        
+        try {
+            const remoteData = await fetchConfig();
+            currentConfig = {
+                line1_feishu: remoteData.line1_feishu,
+                version_time: remoteData.version_time || "云端实时版本"
+            };
+            renderButtons(currentConfig, "");
+            updateStatusUI('active');
+            saveToLocalCache(currentConfig);
+        } catch (err) {
+            // 网络失败，尝试读取本地缓存
+            const cachedRaw = localStorage.getItem('gateway_config_v4');
+            if (cachedRaw) {
+                try {
+                    const cachedObj = JSON.parse(cachedRaw);
+                    if (cachedObj && cachedObj.data) {
+                        currentConfig = {
+                            line1_feishu: cachedObj.data.line1_feishu || FALLBACK_CONFIG.line1_feishu,
+                            version_time: cachedObj.data.version_time || "本地缓存版本"
+                        };
+                        renderButtons(currentConfig, "数据来源：本地缓存");
+                        updateStatusUI('cached');
+                        return;
+                    }
+                } catch (e) {}
+            }
+            
+            // 完全无缓存，使用内置配置
+            currentConfig = {
+                line1_feishu: FALLBACK_CONFIG.line1_feishu,
+                version_time: "内置稳定版本"
+            };
+            renderButtons(currentConfig, "数据来源：内置版本");
+            updateStatusUI('js-fallback');
+        }
+    }
+    
+    function handleManualRefresh() {
+        loadApp(true);
+    }
+    
     function showModalDetails() {
-        document.getElementById('modal-overlay').style.display = 'flex';
+        if (!currentConfig) {
+            getEl('modal-content').innerHTML = `
+                <div class="modal-item"><b>版本标识：</b>加载中...</div>
+                <div class="modal-item"><b>连接模式：</b>--</div>
+                <div class="modal-item"><b>网关内核：</b>${CONFIG_VERSION}</div>
+            `;
+            getEl('modal-overlay').style.display = 'flex';
+            return;
+        }
+        
+        let connectionMode = "";
+        if (currentStatusType === 'cached') {
+            connectionMode = "本地缓存优先";
+        } else if (currentStatusType === 'js-fallback') {
+            connectionMode = "降级应急(内置)";
+        } else {
+            connectionMode = "实时同步(云端)";
+        }
+        
+        const versionInfo = currentConfig.version_time || "标准版本";
+        getEl('modal-content').innerHTML = `
+            <div class="modal-item"><b>版本标识：</b>${versionInfo}</div>
+            <div class="modal-item"><b>连接模式：</b>${connectionMode}</div>
+            <div class="modal-item"><b>网关内核：</b>${CONFIG_VERSION}</div>
+            <div class="modal-item"><b>文档源：</b>飞书官方</div>
+        `;
+        getEl('modal-overlay').style.display = 'flex';
     }
     
     function closeModal() {
-        document.getElementById('modal-overlay').style.display = 'none';
+        getEl('modal-overlay').style.display = 'none';
     }
     
     function init() {
-        updateStatusUI();
+        updateAlertText();
+        loadApp(false);
         
-        const refreshBtn = document.getElementById('refresh-btn');
+        const refreshBtn = getEl('refresh-btn');
         if (refreshBtn) {
-            refreshBtn.onclick = () => {
-                location.reload();
-            };
+            refreshBtn.onclick = () => handleManualRefresh();
         }
         
-        const statusContainer = document.getElementById('status-container');
+        const statusContainer = getEl('status-container');
         if (statusContainer) {
             statusContainer.onclick = () => showModalDetails();
         }
         
-        const modalCloseBtn = document.getElementById('modal-close');
+        const modalCloseBtn = getEl('modal-close');
         if (modalCloseBtn) {
             modalCloseBtn.onclick = () => closeModal();
         }
         
-        const overlay = document.getElementById('modal-overlay');
+        const overlay = getEl('modal-overlay');
         if (overlay) {
             overlay.addEventListener('click', (e) => {
                 if (e.target === overlay) closeModal();
