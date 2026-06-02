@@ -5,14 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>DOCS.GATEWAY | 安全文档网关</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z'%3E%3C/path%3E%3Cpolyline points='13 2 13 9 20 9'%3E%3C/polyline%3E%3C/svg%3E">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background-color: #0a0a0a;
@@ -22,45 +17,33 @@
             justify-content: center;
             padding: 20px;
             color: #171717;
-            overflow: hidden;
+            overflow-x: hidden;
             position: relative;
         }
-
         .bg-scrolling {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 200%;
-            background-image: 
-                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-image: linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
             background-size: 40px 40px;
             z-index: -2;
             animation: backgroundScroll 20s linear infinite;
         }
-
-        @keyframes backgroundScroll {
-            from { transform: translateY(0); }
-            to { transform: translateY(-50%); }
-        }
-
+        @keyframes backgroundScroll { from { transform: translateY(0); } to { transform: translateY(-50%); } }
         .glow {
             position: fixed;
             width: 500px;
             height: 500px;
-            background: radial-gradient(circle, rgba(59, 130, 246, 0.2) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
             border-radius: 50%;
             z-index: -1;
             filter: blur(60px);
             animation: glowMove 18s ease-in-out infinite alternate;
         }
-
-        @keyframes glowMove {
-            0% { transform: translate(-15%, -15%); opacity: 0.5; }
-            100% { transform: translate(20%, 20%); opacity: 1; }
-        }
-
+        @keyframes glowMove { 0% { transform: translate(-15%, -15%); opacity: 0.4; } 100% { transform: translate(20%, 20%); opacity: 0.9; } }
         .refresh-btn {
             position: fixed;
             top: 30px;
@@ -80,57 +63,43 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             z-index: 100;
         }
-
-        .refresh-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            color: #ffffff;
-            transform: translateY(-3px) rotate(90deg);
-            border-color: rgba(255, 255, 255, 0.6);
+        .refresh-btn:hover { background: rgba(255, 255, 255, 0.2); color: #ffffff; transform: translateY(-3px) rotate(90deg); border-color: rgba(255, 255, 255, 0.6); }
+        .refresh-btn:active { transform: scale(0.92) rotate(90deg); }
+        .refresh-btn.refreshing { animation: spin 0.8s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .admin-entry {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            border-radius: 40px;
+            padding: 8px 20px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #ffd966;
+            cursor: pointer;
+            z-index: 200;
+            transition: 0.2s;
+            font-family: monospace;
+            letter-spacing: 1px;
         }
-
-        .refresh-btn:active {
-            transform: scale(0.92) rotate(90deg);
-        }
-
-        .refresh-btn.refreshing {
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
+        .admin-entry:hover { background: #000000aa; color: #ffeb99; border-color: gold; transform: scale(1.02); }
         .main-card {
             background: rgba(255, 255, 255, 0.96);
             width: 100%;
-            max-width: 480px;
+            max-width: 500px;
             border-radius: 36px;
             border: 1px solid rgba(255, 255, 255, 0.6);
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255,255,255,0.2) inset;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
             padding: 48px 36px;
             position: relative;
             backdrop-filter: blur(8px);
             z-index: 10;
         }
-
-        .status-bar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 40px;
-        }
-
-        .brand {
-            font-weight: 800;
-            font-size: 15px;
-            letter-spacing: 0.08em;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: #000;
-        }
-
+        .status-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 40px; }
+        .brand { font-weight: 800; font-size: 15px; letter-spacing: 0.08em; display: flex; align-items: center; gap: 12px; color: #000; }
         .brand-icon {
             width: 32px;
             height: 32px;
@@ -141,496 +110,298 @@
             color: white;
             box-shadow: 0 6px 12px rgba(0,0,0,0.15);
         }
-
-        .system-status {
-            font-size: 12px;
-            color: #3b3b3b;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: #f1f1f1;
-            padding: 8px 16px;
-            border-radius: 100px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-weight: 600;
-        }
-
-        .system-status:hover {
-            background: #e8e8e8;
-            transform: scale(1.02);
-        }
-
-        .status-dot {
-            width: 9px;
-            height: 9px;
-            background-color: #10b981;
-            border-radius: 50%;
-            position: relative;
-        }
-
-        .status-dot::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background: inherit;
-            animation: dotPing 1.4s ease-out infinite;
-        }
-
-        @keyframes dotPing {
-            0% { transform: scale(1); opacity: 0.8; }
-            100% { transform: scale(3); opacity: 0; }
-        }
-
-        .header h1 {
-            font-size: 32px;
-            font-weight: 800;
-            margin-bottom: 12px;
-            letter-spacing: -0.02em;
-            background: linear-gradient(135deg, #171717 0%, #2d2d2d 100%);
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent;
-        }
-
-        .header p {
-            font-size: 15px;
-            color: #5e5e5e;
-            line-height: 1.5;
-            margin-bottom: 28px;
-        }
-
-        .alert-box {
-            background: #f8f8fa;
-            border-left: 5px solid #000000;
-            border-radius: 8px 18px 18px 8px;
-            padding: 18px 20px;
-            margin-bottom: 36px;
-        }
-
-        .alert-desc {
-            font-size: 13.5px;
-            color: #2c2c2c;
-            line-height: 1.6;
-            font-weight: 500;
-        }
-
-        .btn-group {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            padding: 16px 20px;
-            border-radius: 20px;
-            font-size: 15px;
-            font-weight: 700;
-            text-decoration: none;
-            transition: all 0.25s ease;
-            cursor: pointer;
-            border: 1px solid transparent;
-            gap: 8px;
-        }
-
-        .btn-primary {
-            background: #000000;
-            color: #fff;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 22px rgba(0, 0, 0, 0.15);
-            background: #1a1a1a;
-        }
-
-        .btn-secondary {
-            background: #ffffff;
-            color: #8c8c8c;
-            border-color: #e2e2e2;
-            cursor: not-allowed;
-            opacity: 0.6;
-            pointer-events: none;
-        }
-
-        .badge {
-            font-size: 10px;
-            padding: 4px 10px;
-            border-radius: 40px;
-            font-weight: 800;
-            letter-spacing: 0.3px;
-        }
-
-        .badge-rec {
-            background: #e3f7e3;
-            color: #1f6e2f;
-        }
-
-        .badge-offline {
-            background: #f0f0f0;
-            color: #8b8b8b;
-        }
-
-        .source-text-label {
-            font-size: 11px;
-            color: #a07c2e;
-            text-align: center;
-            margin-top: 14px;
-            padding: 0;
-            background: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
-            border-radius: 0 !important;
-            font-weight: 400;
-            letter-spacing: normal;
-        }
-
-        .footer {
-            margin-top: 44px;
-            padding-top: 24px;
-            border-top: 1px solid #ececec;
-            display: flex;
-            justify-content: space-between;
-            font-size: 10px;
-            color: #a5a5a5;
-            font-family: 'SF Mono', monospace;
-            font-weight: 500;
-        }
-
-        #modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(12px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-        }
-
-        .modal {
-            background: #ffffff;
-            padding: 32px 28px;
-            border-radius: 32px;
-            width: 90%;
-            max-width: 380px;
-            animation: modalPop 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.2);
-        }
-
-        @keyframes modalPop {
-            from { transform: scale(0.85); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
-        .modal-item {
-            font-size: 14px;
-            margin-bottom: 14px;
-            padding: 12px 14px;
-            background: #f6f6f8;
-            border-radius: 16px;
-        }
-
-        .modal-close {
-            width: 100%;
-            padding: 14px;
-            background: #000;
-            color: white;
-            border: none;
-            border-radius: 24px;
-            margin-top: 24px;
-            cursor: pointer;
-            font-weight: 700;
-            font-size: 15px;
-        }
+        .system-status { font-size: 12px; color: #3b3b3b; display: flex; align-items: center; gap: 8px; background: #f1f1f1; padding: 8px 16px; border-radius: 100px; cursor: pointer; font-weight: 600; }
+        .system-status:hover { background: #e8e8e8; transform: scale(1.02); }
+        .status-dot { width: 9px; height: 9px; border-radius: 50%; position: relative; }
+        .status-dot::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; background: inherit; animation: dotPing 1.4s ease-out infinite; }
+        @keyframes dotPing { 0% { transform: scale(1); opacity: 0.7; } 100% { transform: scale(3); opacity: 0; } }
+        .header h1 { font-size: 32px; font-weight: 800; margin-bottom: 12px; letter-spacing: -0.02em; background: linear-gradient(135deg, #171717 0%, #2d2d2d 100%); background-clip: text; -webkit-background-clip: text; color: transparent; }
+        .header p { font-size: 15px; color: #5e5e5e; line-height: 1.5; margin-bottom: 28px; }
+        .alert-box { background: #f8f8fa; border-left: 5px solid #000000; border-radius: 8px 18px 18px 8px; padding: 18px 20px; margin-bottom: 36px; }
+        .alert-desc { font-size: 13.5px; color: #2c2c2c; line-height: 1.6; font-weight: 500; }
+        .btn-group { display: flex; flex-direction: column; gap: 16px; }
+        .btn { display: flex; align-items: center; justify-content: center; width: 100%; padding: 16px; border-radius: 20px; font-size: 15px; font-weight: 700; text-decoration: none; gap: 8px; transition: 0.2s; border: 1px solid transparent; cursor: pointer; }
+        .btn-primary { background: #000000; color: #fff; }
+        .btn-primary:hover { transform: translateY(-2px); background: #1a1a1a; }
+        .btn-secondary { background: #ffffff; color: #8c8c8c; border-color: #e2e2e2; cursor: not-allowed; opacity: 0.6; pointer-events: none; }
+        .badge { font-size: 10px; padding: 4px 10px; border-radius: 40px; font-weight: 800; }
+        .badge-rec { background: #e3f7e3; color: #1f6e2f; }
+        .badge-offline { background: #f0f0f0; color: #8b8b8b; }
+        .footer { margin-top: 44px; padding-top: 24px; border-top: 1px solid #ececec; display: flex; justify-content: space-between; font-size: 10px; color: #a5a5a5; font-family: monospace; flex-wrap: wrap; gap: 8px; }
+        .copyright { text-align: center; margin-top: 12px; font-size: 9px; color: #bbb; width: 100%; letter-spacing: 0.5px; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(12px); display: none; align-items: center; justify-content: center; z-index: 1000; }
+        .modal-card { background: white; padding: 32px; border-radius: 32px; width: 90%; max-width: 460px; animation: fadeIn 0.2s; max-height: 85vh; overflow-y: auto; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { font-weight: 600; font-size: 13px; display: block; margin-bottom: 8px; }
+        .form-group input, .form-group textarea { width: 100%; padding: 12px; border-radius: 16px; border: 1px solid #ddd; font-size: 14px; }
+        .btn-full { width: 100%; padding: 14px; background: #000; color: white; border: none; border-radius: 28px; font-weight: 700; cursor: pointer; margin-top: 12px; }
+        .effect-option { display: flex; gap: 12px; align-items: center; margin-top: 8px; }
+        hr { margin: 20px 0; }
+        .error-msg { color: #c00; font-size: 12px; margin-top: 8px; text-align: center; }
+        #extraEffectCanvas { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 0; transition: opacity 0.5s; }
     </style>
 </head>
 <body>
-
 <div class="bg-scrolling"></div>
-<div class="glow" style="top: -5%; left: -5%;"></div>
-<div class="glow" style="bottom: -5%; right: -5%; background: radial-gradient(circle, rgba(16,185,129,0.12) 0%, transparent 70%);"></div>
-
-<button class="refresh-btn" id="refresh-btn" title="同步最新配置">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
-    </svg>
-</button>
-
+<div class="glow"></div><div class="glow" style="bottom: -10%; right: -10%;"></div>
+<canvas id="extraEffectCanvas"></canvas>
+<button class="refresh-btn" id="refreshBtn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></button>
+<div class="admin-entry" id="adminEntryBtn">🔐 管理员</div>
 <div class="main-card">
     <div class="status-bar">
-        <div class="brand">
-            <div class="brand-icon">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
-                    <polyline points="13 2 13 9 20 9"></polyline>
-                </svg>
-            </div>
-            DOCS.GATEWAY
-        </div>
-        <div class="system-status" id="status-container">
-            <div class="status-dot" id="status-dot" style="background-color: #10b981;"></div>
-            <span id="status-text">ACTIVE</span>
-        </div>
+        <div class="brand"><div class="brand-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg></div>DOCS.GATEWAY</div>
+        <div class="system-status" id="statusContainer"><div class="status-dot" id="statusDot" style="background:#10b981;"></div><span id="statusText">ACTIVE</span></div>
     </div>
-
-    <div class="header">
-        <h1>文档连接中心</h1>
-        <p>加载安全网关配置...</p>
-    </div>
-
-    <div class="alert-box">
-        <div class="alert-desc" id="alert-message">
-            目前文档更新为飞书文档，不再使用金山文档，可以直接前往飞书了，不会再卡死了
-        </div>
-    </div>
-
-    <div id="action-area" class="btn-group"></div>
-
-    <div class="footer">
-        <span>NODE: GATEWAY-8492A</span>
-        <span>VER: 1.0.4</span>
-    </div>
+    <div class="header"><h1 id="mainTitle">文档连接中心</h1><p id="subText">安全文档网关 · 智能分发</p></div>
+    <div class="alert-box"><div class="alert-desc" id="alertMsg">目前文档已迁移至飞书，安全稳定，不再卡顿。</div></div>
+    <div id="actionArea" class="btn-group"></div>
+    <div class="footer"><span>NODE: GATEWAY-8492A</span><span>VER: 2.0.0</span><div class="copyright">Copyright © 2026 jianling Technology Studio. All Rights Reserved.</div></div>
 </div>
-
-<div id="modal-overlay">
-    <div class="modal">
-        <h2 style="margin-bottom: 20px; letter-spacing: -0.02em; font-weight: 700;">配置核验</h2>
-        <div id="modal-content"></div>
-        <button class="modal-close" id="modal-close">确认并关闭</button>
-    </div>
-</div>
-
+<div id="loginModal" class="modal-overlay"><div class="modal-card"><h3>管理员安全认证</h3><div class="form-group"><label>密码</label><input type="password" id="loginPwd" placeholder="请输入管理密码"></div><button class="btn-full" id="doLogin">登录</button><div id="loginMsg" class="error-msg"></div></div></div>
+<div id="consoleModal" class="modal-overlay"><div class="modal-card"><h2>⚙️ 安全控制台</h2><div style="max-height:60vh;overflow-y:auto;"><div class="form-group"><label>🔐 修改管理员密码</label><input type="password" id="newAdminPwd" placeholder="新密码 (至少6位)"><button class="btn-full" id="changePwdBtn" style="margin-top:8px;">更新密码</button></div><hr><div class="form-group"><label>📝 修改主标题</label><input type="text" id="editTitle"></div><div class="form-group"><label>📄 修改副标题</label><input type="text" id="editSub"></div><div class="form-group"><label>💬 修改提示框文字</label><textarea id="editAlert" rows="2"></textarea></div><div class="form-group"><label>🔗 修改线路一链接</label><input type="url" id="editLinkUrl"></div><button class="btn-full" id="saveTextLinkBtn">保存文字 & 链接</button><hr><div class="form-group"><label>✨ 界面特效</label><div class="effect-option"><input type="radio" name="effectMode" value="off" id="effOff"><label for="effOff">低调网格</label></div><div class="effect-option"><input type="radio" name="effectMode" value="gentle" id="effGentle"><label for="effGentle">柔光粒子</label></div><div class="effect-option"><input type="radio" name="effectMode" value="wave" id="effWave"><label for="effWave">波纹微动</label></div></div><button class="btn-full" id="applyEffectBtn">应用特效</button><hr><button class="btn-full" id="closeConsoleBtn" style="background:#2c3e50;">关闭控制台</button></div></div></div>
 <script>
-    // ============================================================
-    // DOCS.GATEWAY - 完整功能版
-    // 托管说明：将此HTML文件上传至任意静态托管服务即可
-    // 如需动态更新配置，请在同目录下放置 config.json 文件
-    // ============================================================
+(async function(){
+    // ==================== 防爆破核心：使用 localStorage 持久化存储（刷新页面不重置） ====================
+    const MAX_ATTEMPTS = 5;           // 最大尝试次数
+    const LOCK_TIME_MS = 30 * 1000;   // 锁定30秒
     
-    const CONFIG_VERSION = "1.0.4";
-    
-    // 内置降级配置（当网络和缓存都不可用时使用）
-    const FALLBACK_CONFIG = {
-        line1_feishu: "https://jcnuvckg2scm.feishu.cn/wiki/DcJqwh898iyqHBkRGNIcuam4nHg?from=from_copylink",
-        version_time: "内置稳定版本 (Fallback)"
-    };
-    
-    let currentConfig = null;
-    let currentStatusType = "active"; // active, cached, js-fallback
-    
-    const getEl = (id) => document.getElementById(id);
-    
-    function updateAlertText() {
-        const alertDiv = document.querySelector('.alert-desc');
-        if (alertDiv) {
-            alertDiv.innerText = "目前文档更新为飞书文档，不再使用金山文档，可以直接前往飞书了，不会再卡死了";
-        }
+    // 从 localStorage 读取失败次数和锁定时间
+    function getLoginAttempts() {
+        const val = localStorage.getItem('admin_login_attempts');
+        return val ? parseInt(val) : 0;
     }
-    
-    function updateStatusUI(type) {
-        const dot = getEl('status-dot');
-        const text = getEl('status-text');
-        const refreshBtn = getEl('refresh-btn');
-        if (!dot || !text || !refreshBtn) return;
-        refreshBtn.classList.remove('refreshing');
-        
-        currentStatusType = type;
-        
-        if (type === 'refreshing') {
-            text.innerText = 'SYNCING...';
-            refreshBtn.classList.add('refreshing');
-        } else if (type === 'js-fallback') {
-            dot.style.backgroundColor = '#ef4444';
-            text.innerText = 'JS FALLBACK';
-        } else if (type === 'cached') {
-            dot.style.backgroundColor = '#f59e0b';
-            text.innerText = 'CACHED';
+    function setLoginAttempts(val) {
+        localStorage.setItem('admin_login_attempts', val.toString());
+    }
+    function getLockUntil() {
+        const val = localStorage.getItem('admin_lock_until');
+        return val ? parseInt(val) : 0;
+    }
+    function setLockUntil(val) {
+        if (val > 0) {
+            localStorage.setItem('admin_lock_until', val.toString());
         } else {
-            dot.style.backgroundColor = '#10b981';
-            text.innerText = 'ACTIVE';
+            localStorage.removeItem('admin_lock_until');
         }
     }
     
-    // 从服务器获取配置（需要同目录下有 config.json）
-    async function fetchConfig() {
-        const t = Date.now();
-        const url = `./config.json?t=${t}&v=${CONFIG_VERSION}`;
-        try {
-            const response = await fetch(url, { 
-                cache: 'no-store',
-                headers: { 'Cache-Control': 'no-cache' }
-            });
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            const remoteData = await response.json();
-            return {
-                line1_feishu: remoteData.line1_feishu || FALLBACK_CONFIG.line1_feishu,
-                version_time: remoteData.version_time || "云端实时配置"
-            };
-        } catch (err) {
-            throw new Error('Network fetch failed');
+    // 检查是否处于锁定状态，返回剩余秒数
+    function isLocked() {
+        const lockUntil = getLockUntil();
+        const now = Date.now();
+        if (lockUntil && now < lockUntil) {
+            return Math.ceil((lockUntil - now) / 1000);
+        }
+        // 锁定已过期，清理状态
+        if (lockUntil && now >= lockUntil) {
+            setLockUntil(0);
+            setLoginAttempts(0);
+        }
+        return 0;
+    }
+    
+    // 记录一次失败的尝试
+    function recordFailedAttempt() {
+        let attempts = getLoginAttempts() + 1;
+        if (attempts >= MAX_ATTEMPTS) {
+            setLockUntil(Date.now() + LOCK_TIME_MS);
+            setLoginAttempts(0);
+            return { locked: true, remaining: LOCK_TIME_MS / 1000 };
+        } else {
+            setLoginAttempts(attempts);
+            return { locked: false, attemptsLeft: MAX_ATTEMPTS - attempts };
         }
     }
     
-    function renderButtons(data, sourcePlainText = "") {
-        const area = getEl('action-area');
-        if (!area) return;
-        
-        const line1Url = data.line1_feishu || FALLBACK_CONFIG.line1_feishu;
-        
-        let sourceHtml = '';
-        if (sourcePlainText && sourcePlainText.trim() !== "") {
-            sourceHtml = `<div class="source-text-label">${sourcePlainText}</div>`;
+    // 登录成功后重置防爆破状态
+    function resetBruteforceState() {
+        setLoginAttempts(0);
+        setLockUntil(0);
+    }
+    
+    // 密码存储 (SHA-256 加密)
+    let storedHash = localStorage.getItem('admin_hash');
+    let storedSalt = localStorage.getItem('admin_salt');
+    
+    async function hashPassword(pwd, salt) {
+        const enc = new TextEncoder();
+        const data = enc.encode(pwd + salt);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2,'0')).join('');
+    }
+    
+    if (!storedHash || !storedSalt) {
+        const defaultPwd = "admin123";
+        const defaultSalt = "docs_salt_" + Date.now() + "_" + Math.random();
+        storedHash = await hashPassword(defaultPwd, defaultSalt);
+        storedSalt = defaultSalt;
+        localStorage.setItem('admin_hash', storedHash);
+        localStorage.setItem('admin_salt', storedSalt);
+    }
+    
+    async function verifyPassword(inputPwd) {
+        // 先检查是否锁定
+        const lockedRemain = isLocked();
+        if (lockedRemain > 0) {
+            throw new Error(`尝试次数过多，请在 ${lockedRemain} 秒后重试`);
         }
         
-        const buttonsHtml = `
-            <a href="${line1Url}" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
-                线路一：飞书文档（官方）
-                <span class="badge badge-rec">推荐</span>
-            </a>
-            <div class="btn btn-secondary">
-                线路二：备用在线预览（停用）
-                <span class="badge badge-offline">停用</span>
-            </div>
-            ${sourceHtml}
-        `;
-        
-        area.innerHTML = buttonsHtml;
-    }
-    
-    function saveToLocalCache(data) {
-        try {
-            localStorage.setItem('gateway_config_v4', JSON.stringify({
-                data: {
-                    line1_feishu: data.line1_feishu,
-                    version_time: data.version_time
-                },
-                time: Date.now()
-            }));
-        } catch(e) {}
-    }
-    
-    async function loadApp(forceRefresh = false) {
-        updateStatusUI('refreshing');
-        
-        try {
-            const remoteData = await fetchConfig();
-            currentConfig = {
-                line1_feishu: remoteData.line1_feishu,
-                version_time: remoteData.version_time || "云端实时版本"
-            };
-            renderButtons(currentConfig, "");
-            updateStatusUI('active');
-            saveToLocalCache(currentConfig);
-        } catch (err) {
-            // 网络失败，尝试读取本地缓存
-            const cachedRaw = localStorage.getItem('gateway_config_v4');
-            if (cachedRaw) {
-                try {
-                    const cachedObj = JSON.parse(cachedRaw);
-                    if (cachedObj && cachedObj.data) {
-                        currentConfig = {
-                            line1_feishu: cachedObj.data.line1_feishu || FALLBACK_CONFIG.line1_feishu,
-                            version_time: cachedObj.data.version_time || "本地缓存版本"
-                        };
-                        renderButtons(currentConfig, "数据来源：本地缓存");
-                        updateStatusUI('cached');
-                        return;
-                    }
-                } catch (e) {}
+        const inputHash = await hashPassword(inputPwd, storedSalt);
+        if (inputHash === storedHash) {
+            // 登录成功，重置计数器
+            resetBruteforceState();
+            return true;
+        } else {
+            const result = recordFailedAttempt();
+            if (result.locked) {
+                throw new Error(`密码错误次数过多，已锁定 ${result.remaining} 秒`);
+            } else {
+                throw new Error(`密码错误，还剩 ${result.attemptsLeft} 次尝试机会`);
             }
-            
-            // 完全无缓存，使用内置配置
-            currentConfig = {
-                line1_feishu: FALLBACK_CONFIG.line1_feishu,
-                version_time: "内置稳定版本"
-            };
-            renderButtons(currentConfig, "数据来源：内置版本");
-            updateStatusUI('js-fallback');
         }
     }
     
-    function handleManualRefresh() {
-        loadApp(true);
+    async function updateAdminPassword(newPwd) {
+        if (newPwd.length < 6) throw new Error("密码至少6位");
+        const newSalt = "docs_salt_" + Date.now() + "_" + Math.random();
+        const newHash = await hashPassword(newPwd, newSalt);
+        localStorage.setItem('admin_hash', newHash);
+        localStorage.setItem('admin_salt', newSalt);
+        storedHash = newHash;
+        storedSalt = newSalt;
+        resetBruteforceState();
+        return true;
     }
     
-    function showModalDetails() {
-        if (!currentConfig) {
-            getEl('modal-content').innerHTML = `
-                <div class="modal-item"><b>版本标识：</b>加载中...</div>
-                <div class="modal-item"><b>连接模式：</b>--</div>
-                <div class="modal-item"><b>网关内核：</b>${CONFIG_VERSION}</div>
-            `;
-            getEl('modal-overlay').style.display = 'flex';
-            return;
+    // ==================== 开发者工具防护 (未登录禁止打开) ====================
+    let isAdminLogged = false;
+    document.addEventListener('keydown', function(e) {
+        if (!isAdminLogged) {
+            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J')) || (e.ctrlKey && e.key === 'U')) {
+                e.preventDefault();
+                alert("🔒 开发者工具已禁用，请先登录管理员。");
+                return false;
+            }
         }
-        
-        let connectionMode = "";
-        if (currentStatusType === 'cached') {
-            connectionMode = "本地缓存优先";
-        } else if (currentStatusType === 'js-fallback') {
-            connectionMode = "降级应急(内置)";
-        } else {
-            connectionMode = "实时同步(云端)";
+    });
+    document.addEventListener('contextmenu', function(e) {
+        if (!isAdminLogged) {
+            e.preventDefault();
+            alert("右键菜单已锁定，请先登录管理员。");
+            return false;
         }
-        
-        const versionInfo = currentConfig.version_time || "标准版本";
-        getEl('modal-content').innerHTML = `
-            <div class="modal-item"><b>版本标识：</b>${versionInfo}</div>
-            <div class="modal-item"><b>连接模式：</b>${connectionMode}</div>
-            <div class="modal-item"><b>网关内核：</b>${CONFIG_VERSION}</div>
-            <div class="modal-item"><b>文档源：</b>飞书官方</div>
-        `;
-        getEl('modal-overlay').style.display = 'flex';
+    });
+    
+    // ==================== 动态配置 ====================
+    let dynamicCfg = {
+        mainTitle: "文档连接中心",
+        subText: "安全文档网关 · 智能分发",
+        alertMsg: "目前文档已迁移至飞书，安全稳定，不再卡顿。",
+        line1Link: "https://jcnuvckg2scm.feishu.cn/wiki/DcJqwh898iyqHBkRGNIcuam4nHg?from=from_copylink"
+    };
+    function loadAdminSettings() {
+        const saved = localStorage.getItem('gateway_admin_full_cfg');
+        if(saved) { try { const p = JSON.parse(saved); dynamicCfg = { ...dynamicCfg, ...p }; } catch(e){} }
+        applyUIText(); renderDynamicButton();
+    }
+    function applyUIText() {
+        document.getElementById('mainTitle').innerText = dynamicCfg.mainTitle;
+        document.getElementById('subText').innerText = dynamicCfg.subText;
+        document.getElementById('alertMsg').innerText = dynamicCfg.alertMsg;
+    }
+    function renderDynamicButton() {
+        const area = document.getElementById('actionArea');
+        if(area) area.innerHTML = `<a href="${dynamicCfg.line1Link}" target="_blank" class="btn btn-primary">线路一：飞书文档（官方）<span class="badge badge-rec">推荐</span></a><div class="btn btn-secondary">线路二：备用在线预览（停用）<span class="badge badge-offline">停用</span></div>`;
+    }
+    function saveFullConfig() { localStorage.setItem('gateway_admin_full_cfg', JSON.stringify(dynamicCfg)); }
+    function updateTextAndLink(title, sub, alertText, link) {
+        if(title !== undefined) dynamicCfg.mainTitle = title;
+        if(sub !== undefined) dynamicCfg.subText = sub;
+        if(alertText !== undefined) dynamicCfg.alertMsg = alertText;
+        if(link !== undefined && link.trim()) dynamicCfg.line1Link = link;
+        applyUIText(); renderDynamicButton(); saveFullConfig();
     }
     
-    function closeModal() {
-        getEl('modal-overlay').style.display = 'none';
+    // ==================== 特效 ====================
+    let activeEffect = localStorage.getItem('ui_effect_pref') || "off";
+    let canvas = document.getElementById('extraEffectCanvas'), ctx = canvas.getContext('2d'), animFrame = null, particles = [];
+    function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    window.addEventListener('resize', () => { if(activeEffect !== 'off') resizeCanvas(); });
+    function clearEffect() { if(animFrame) cancelAnimationFrame(animFrame); if(ctx) ctx.clearRect(0,0,canvas.width,canvas.height); canvas.style.opacity = '0'; particles = []; }
+    function initGentle() {
+        particles = [];
+        for(let i=0;i<70;i++) particles.push({ x:Math.random()*canvas.width, y:Math.random()*canvas.height, r:Math.random()*2+1, alpha:Math.random()*0.4+0.1, vx:(Math.random()-0.5)*0.3, vy:(Math.random()-0.5)*0.2 });
+        function draw() { if(activeEffect !== 'gentle') return; if(!ctx) return; ctx.clearRect(0,0,canvas.width,canvas.height); for(let p of particles) { p.x+=p.vx; p.y+=p.vy; if(p.x<0) p.x=canvas.width; if(p.x>canvas.width) p.x=0; if(p.y<0) p.y=canvas.height; if(p.y>canvas.height) p.y=0; ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fillStyle = `rgba(90,150,230,${p.alpha*0.55})`; ctx.fill(); } animFrame = requestAnimationFrame(draw); }
+        if(animFrame) cancelAnimationFrame(animFrame); draw();
+    }
+    function initWave() { let time=0; function waveAnim() { if(activeEffect !== 'wave') return; if(!ctx) return; ctx.clearRect(0,0,canvas.width,canvas.height); time+=0.02; const step=35; for(let x=0; x<canvas.width+step; x+=step) for(let y=0; y<canvas.height+step; y+=step) { const d = Math.hypot(x-canvas.width/2, y-canvas.height/2); const val = Math.sin(d*0.025 - time)*0.5; const opacity = Math.abs(val)*0.22; ctx.beginPath(); ctx.arc(x,y,2.2,0,Math.PI*2); ctx.fillStyle = `rgba(70,130,210,${opacity})`; ctx.fill(); } animFrame = requestAnimationFrame(waveAnim); } if(animFrame) cancelAnimationFrame(animFrame); waveAnim(); }
+    function applyEffect(effect) { activeEffect = effect; localStorage.setItem('ui_effect_pref', effect); if(activeEffect === 'off') { clearEffect(); canvas.style.opacity='0'; return; } canvas.style.opacity='0.45'; resizeCanvas(); if(activeEffect==='gentle') initGentle(); else if(activeEffect==='wave') initWave(); }
+    
+    // ==================== 网关状态 ====================
+    let currentStatusType = "active";
+    async function refreshGateway() {
+        const dot = document.getElementById('statusDot'), text = document.getElementById('statusText');
+        if(!dot) return; text.innerText = "SYNCING...";
+        try {
+            const res = await fetch(`./config.json?t=${Date.now()}`);
+            if(res.ok) { const data = await res.json(); if(data.line1_feishu) dynamicCfg.line1Link = data.line1_feishu; renderDynamicButton(); dot.style.backgroundColor="#10b981"; text.innerText="ACTIVE"; currentStatusType="active"; }
+            else throw new Error();
+        } catch(e) {
+            const cached = localStorage.getItem('gateway_config_v4');
+            if(cached) { dot.style.backgroundColor="#f59e0b"; text.innerText="CACHED"; currentStatusType="cached"; }
+            else { dot.style.backgroundColor="#ef4444"; text.innerText="JS FALLBACK"; currentStatusType="fallback"; }
+        }
     }
     
-    function init() {
-        updateAlertText();
-        loadApp(false);
-        
-        const refreshBtn = getEl('refresh-btn');
-        if (refreshBtn) {
-            refreshBtn.onclick = () => handleManualRefresh();
-        }
-        
-        const statusContainer = getEl('status-container');
-        if (statusContainer) {
-            statusContainer.onclick = () => showModalDetails();
-        }
-        
-        const modalCloseBtn = getEl('modal-close');
-        if (modalCloseBtn) {
-            modalCloseBtn.onclick = () => closeModal();
-        }
-        
-        const overlay = getEl('modal-overlay');
-        if (overlay) {
-            overlay.addEventListener('click', (e) => {
-                if (e.target === overlay) closeModal();
-            });
-        }
-    }
+    // ==================== 管理员UI ====================
+    const refreshBtn = document.getElementById('refreshBtn');
+    refreshBtn.onclick = () => { refreshBtn.classList.add('refreshing'); refreshGateway().finally(()=>setTimeout(()=>refreshBtn.classList.remove('refreshing'),500)); };
+    document.getElementById('statusContainer').onclick = () => { let mode = currentStatusType==='active'?'实时同步(云端)':(currentStatusType==='cached'?'本地缓存优先':'降级应急(内置)'); alert(`当前配置模式: ${mode}\n文档地址: ${dynamicCfg.line1Link}`); };
     
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-    } else {
-        init();
+    const loginModal = document.getElementById('loginModal'), consoleModal = document.getElementById('consoleModal'), adminBtn = document.getElementById('adminEntryBtn');
+    async function onAdminLogin() {
+        const pwd = document.getElementById('loginPwd').value, msgDiv = document.getElementById('loginMsg');
+        try { 
+            await verifyPassword(pwd); 
+            isAdminLogged = true; 
+            loginModal.style.display = 'none'; 
+            document.getElementById('editTitle').value = dynamicCfg.mainTitle; 
+            document.getElementById('editSub').value = dynamicCfg.subText; 
+            document.getElementById('editAlert').value = dynamicCfg.alertMsg; 
+            document.getElementById('editLinkUrl').value = dynamicCfg.line1Link;
+            const radios = document.getElementsByName('effectMode'); 
+            for(let r of radios) if(r.value === activeEffect) r.checked = true;
+            consoleModal.style.display = 'flex'; 
+            msgDiv.innerText = ''; 
+            document.getElementById('loginPwd').value = '';
+        } catch(err) { 
+            msgDiv.innerText = err.message; 
+        }
     }
+    adminBtn.onclick = () => { 
+        if(isAdminLogged) { 
+            document.getElementById('editTitle').value = dynamicCfg.mainTitle; 
+            document.getElementById('editSub').value = dynamicCfg.subText; 
+            document.getElementById('editAlert').value = dynamicCfg.alertMsg; 
+            document.getElementById('editLinkUrl').value = dynamicCfg.line1Link; 
+            const radios = document.getElementsByName('effectMode'); 
+            for(let r of radios) if(r.value === activeEffect) r.checked = true; 
+            consoleModal.style.display = 'flex'; 
+        } else { 
+            loginModal.style.display = 'flex'; 
+        } 
+    };
+    document.getElementById('doLogin').onclick = onAdminLogin;
+    window.onclick = (e) => { if(e.target === loginModal) loginModal.style.display = 'none'; if(e.target === consoleModal) consoleModal.style.display = 'none'; };
+    document.getElementById('closeConsoleBtn').onclick = () => { consoleModal.style.display = 'none'; };
+    document.getElementById('changePwdBtn').onclick = async () => { const newPwd = document.getElementById('newAdminPwd').value; if(!newPwd) { alert("请输入新密码"); return; } try { await updateAdminPassword(newPwd); alert("管理员密码修改成功！"); document.getElementById('newAdminPwd').value = ''; } catch(e) { alert(e.message); } };
+    document.getElementById('saveTextLinkBtn').onclick = () => { updateTextAndLink(document.getElementById('editTitle').value, document.getElementById('editSub').value, document.getElementById('editAlert').value, document.getElementById('editLinkUrl').value); alert("文字与链接已更新"); };
+    document.getElementById('applyEffectBtn').onclick = () => { let eff = "off"; if(document.getElementById('effGentle').checked) eff = "gentle"; else if(document.getElementById('effWave').checked) eff = "wave"; applyEffect(eff); alert(`特效已切换`); };
+    
+    loadAdminSettings(); refreshGateway(); resizeCanvas(); applyEffect(activeEffect);
+})();
 </script>
 </body>
 </html>
